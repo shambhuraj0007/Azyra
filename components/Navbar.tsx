@@ -2,11 +2,14 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { Rocket, Menu, X, LogOut, User } from "lucide-react";
+import { Rocket, Menu, X, LogOut, User, Coins, Gift } from "lucide-react";
 import CampaignModal from "./CampaignModal";
 import CreatorModal from "./CreatorModal";
+import ShareEarnModal from "./ShareEarnModal";
+import { getStoredWallet, UserWallet } from "@/lib/walletStore";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -15,6 +18,23 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [campaignModalOpen, setCampaignModalOpen] = useState(false);
   const [creatorModalOpen, setCreatorModalOpen] = useState(false);
+  const [shareEarnOpen, setShareEarnOpen] = useState(false);
+  const [walletBalance, setWalletBalance] = useState<number>(2000);
+
+  React.useEffect(() => {
+    const w = getStoredWallet(session?.user?.email || "founder@startup.com");
+    setWalletBalance(w.credits);
+
+    const handleUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<UserWallet>;
+      if (customEvent.detail) {
+        setWalletBalance(customEvent.detail.credits);
+      }
+    };
+
+    window.addEventListener("azyra-wallet-updated", handleUpdate);
+    return () => window.removeEventListener("azyra-wallet-updated", handleUpdate);
+  }, [session?.user?.email]);
 
   const navLinks = [
     { label: "Discover", href: "/discover" },
@@ -31,14 +51,20 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 p-[1px] shadow-lg shadow-indigo-500/20 group-hover:shadow-indigo-500/40 transition-all duration-300">
-              <div className="w-full h-full bg-[#090C15] rounded-[11px] flex items-center justify-center">
-                <Rocket className="w-5 h-5 text-indigo-400 group-hover:scale-110 transition-transform duration-300" />
+              <div className="w-full h-full bg-white rounded-[11px] p-1.5 flex items-center justify-center">
+                <Image
+                  src="/logo-mark.png"
+                  alt="AZYRA"
+                  width={28}
+                  height={28}
+                  priority
+                  className="w-auto h-6 object-contain group-hover:scale-110 transition-transform duration-300"
+                />
               </div>
             </div>
             <div className="flex flex-col">
-              <span className="text-2xl font-black tracking-tight text-white flex items-center gap-1">
+              <span className="text-2xl font-black tracking-tight text-white flex items-center gap-1 font-sans">
                 AZYRA
-                <span className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-ping inline-block" />
               </span>
               <span className="text-[10px] tracking-widest uppercase text-slate-400 font-semibold -mt-1">
                 Growth Ecosystem
@@ -54,11 +80,10 @@ export default function Navbar() {
                 <Link
                   key={item.label}
                   href={item.href}
-                  className={`px-3.5 py-1.5 text-sm font-medium rounded-full transition-all duration-200 ${
-                    isActive
+                  className={`px-3.5 py-1.5 text-sm font-medium rounded-full transition-all duration-200 ${isActive
                       ? "text-white bg-white/[0.12] shadow-sm font-semibold"
                       : "text-slate-300 hover:text-white hover:bg-white/[0.06]"
-                  }`}
+                    }`}
                 >
                   {item.label}
                 </Link>
@@ -106,6 +131,20 @@ export default function Navbar() {
               </>
             )}
 
+            {/* Share & Earn Credits Wallet Button */}
+            <button
+              type="button"
+              onClick={() => setShareEarnOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 font-mono text-xs font-bold transition shadow-sm"
+              title="Share & Earn credits. 1000 credits = $1.00 USD on Leaderboard bids!"
+            >
+              <Coins className="w-3.5 h-3.5 text-amber-400" />
+              <span>{walletBalance.toLocaleString()} Credits</span>
+              <span className="text-[10px] px-1 py-0.2 rounded bg-amber-500/25 text-amber-200">
+                ${(walletBalance / 1000).toFixed(2)}
+              </span>
+            </button>
+
             <button
               onClick={() => setCampaignModalOpen(true)}
               className="group relative inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
@@ -151,11 +190,10 @@ export default function Navbar() {
                   key={item.label}
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`px-3 py-2 text-base font-medium rounded-lg ${
-                    pathname === item.href
+                  className={`px-3 py-2 text-base font-medium rounded-lg ${pathname === item.href
                       ? "text-indigo-400 bg-white/[0.06] font-semibold"
                       : "text-slate-200 hover:text-indigo-400 hover:bg-white/[0.04]"
-                  }`}
+                    }`}
                 >
                   {item.label}
                 </Link>
@@ -187,6 +225,24 @@ export default function Navbar() {
                   </Link>
                 </>
               )}
+              {/* Mobile Wallet Balance Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setShareEarnOpen(true);
+                }}
+                className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono font-bold"
+              >
+                <span className="flex items-center gap-2">
+                  <Coins className="w-4 h-4 text-amber-400" />
+                  <span>Wallet: {walletBalance.toLocaleString()} Credits</span>
+                </span>
+                <span className="text-emerald-400 font-extrabold">
+                  ${(walletBalance / 1000).toFixed(2)} USD
+                </span>
+              </button>
+
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
@@ -205,6 +261,7 @@ export default function Navbar() {
       {/* Modals */}
       <CampaignModal isOpen={campaignModalOpen} onClose={() => setCampaignModalOpen(false)} />
       <CreatorModal isOpen={creatorModalOpen} onClose={() => setCreatorModalOpen(false)} />
+      <ShareEarnModal isOpen={shareEarnOpen} onClose={() => setShareEarnOpen(false)} />
     </>
   );
 }

@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { awardSignupBonus } from "@/lib/walletStore";
 import {
   Rocket,
   Sparkles,
@@ -17,11 +18,15 @@ import {
   Mail,
   KeyRound,
   ShieldCheck,
+  Gift,
+  Coins,
 } from "lucide-react";
 
-export default function JoinPage() {
+function JoinContent() {
   const { data: session, status: sessionStatus } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const refCode = searchParams.get("ref");
 
   const [role, setRole] = useState<"startup" | "creator">("startup");
   const [fullName, setFullName] = useState("");
@@ -137,7 +142,12 @@ export default function JoinPage() {
     });
 
     if (result?.ok) {
-      alert(`Welcome to AZYRA! Registered as ${fullName} (${role}).`);
+      const wallet = awardSignupBonus(email, refCode);
+      alert(
+        `Welcome to AZYRA! Registered as ${fullName} (${role}). 🎁 ${wallet.credits.toLocaleString()} Wallet Credits ($${(
+          wallet.credits / 1000
+        ).toFixed(2)} USD) attached to your account!`
+      );
       router.push("/discover");
     } else {
       alert("Registration failed. Please check your information.");
@@ -156,10 +166,27 @@ export default function JoinPage() {
           <div className="rounded-3xl p-8 bg-[#0F0C22] border border-purple-500/30 shadow-2xl backdrop-blur-xl">
             {/* Header */}
             <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-semibold mb-3">
-                <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-                Join the Growth Ecosystem
-              </div>
+              {/* Welcome Bonus / Referral Banner */}
+              {refCode ? (
+                <div className="mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono flex items-center gap-3 text-left">
+                  <Gift className="w-5 h-5 text-amber-400 shrink-0" />
+                  <div>
+                    <span className="font-bold block">Invited with Referral: {refCode}</span>
+                    <span className="text-[11px] text-slate-300">
+                      Sign up to claim <strong>2,000 Welcome Credits</strong> + <strong>1,000 Referral Bonus</strong> ($3.00 USD total) for leaderboard bids!
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className="mb-6 p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 to-emerald-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono flex items-center justify-between text-left">
+                  <div className="flex items-center gap-2">
+                    <Coins className="w-4 h-4 text-amber-400 shrink-0" />
+                    <span>🎁 <strong>2,000 Wallet Credits ($2.00 USD)</strong> attached on signup!</span>
+                  </div>
+                  <span className="text-[10px] text-emerald-400 font-bold hidden sm:inline">1000 = $1.00</span>
+                </div>
+              )}
+
               <h1 className="text-3xl font-black text-white">Create Your AZYRA Account</h1>
               <p className="text-xs text-slate-400 mt-1">
                 Where Startups Get Seen &amp; Creators Get Discovered
@@ -406,5 +433,13 @@ export default function JoinPage() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function JoinPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#07090E] flex items-center justify-center text-slate-400 font-mono">Loading signup...</div>}>
+      <JoinContent />
+    </Suspense>
   );
 }

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { INITIAL_WHOP_BOUNTIES, WhopBountyPool } from "@/lib/bountiesData";
+import { INITIAL_BOUNTIES, BountyPool } from "@/lib/bountiesData";
 import {
   ArrowLeft,
   Film,
@@ -28,7 +28,7 @@ function SubmitClipForm() {
   const router = useRouter();
   const initialBountyId = searchParams.get("bountyId");
 
-  const [bounties, setBounties] = useState<WhopBountyPool[]>(INITIAL_WHOP_BOUNTIES);
+  const [bounties, setBounties] = useState<BountyPool[]>(INITIAL_BOUNTIES);
   const [selectedId, setSelectedId] = useState<string>(initialBountyId || bounties[0]?.id || "");
   const [videoUrl, setVideoUrl] = useState("");
   const [platform, setPlatform] = useState<"TikTok" | "Reels" | "Shorts" | "X / Twitter">("TikTok");
@@ -124,7 +124,7 @@ function SubmitClipForm() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl sm:text-3xl font-black text-white">Whop Clips Submission Portal</h1>
+                <h1 className="text-2xl sm:text-3xl font-black text-white">AZYRA Clips Submission Portal</h1>
                 <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-pink-500/20 text-pink-300 border border-pink-500/30 uppercase">
                   Pay-Per-1K-Views
                 </span>
@@ -151,7 +151,7 @@ function SubmitClipForm() {
             {/* 1. Bounty Selection */}
             <div>
               <label className="block text-xs font-mono uppercase text-pink-300 font-extrabold mb-2">
-                1. Select Whop Clips Bounty Campaign *
+                1. Select AZYRA Clips Bounty Campaign *
               </label>
               <select
                 value={selectedId}
@@ -278,12 +278,12 @@ function SubmitClipForm() {
               </div>
             </div>
 
-            {/* 3. Whop Pay-Per-1K-Views Earnings Calculator Panel */}
+            {/* 3. AZYRA Pay-Per-1K-Views Earnings Calculator Panel */}
             <div className="p-6 rounded-2xl bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-indigo-500/10 border border-pink-500/40 space-y-3">
               <div className="flex items-center justify-between text-xs font-mono">
                 <span className="text-pink-300 font-bold flex items-center gap-2 uppercase tracking-wide">
                   <TrendingUp className="w-4 h-4 text-pink-400" />
-                  Live Whop CPM Payout Calculator
+                  Live AZYRA CPM Payout Calculator
                 </span>
                 <span className="text-slate-400">
                   ({viewCount.toLocaleString()} / 1,000) × ${selectedBounty?.cpmRate.toFixed(2)}
@@ -331,7 +331,7 @@ function SubmitClipForm() {
                   I confirm required hashtags ({selectedBounty?.hashtags.join(" ")}) are tagged in the video caption.
                 </span>
               </label>
-              <p className="text-[11px] text-slate-400 pl-6">• Whop API automatically verifies views and transfers funds directly to your wallet balance.</p>
+              <p className="text-[11px] text-slate-400 pl-6">• AZYRA automatically verifies views and transfers funds directly to your wallet balance.</p>
             </div>
 
             {/* Action CTAs */}

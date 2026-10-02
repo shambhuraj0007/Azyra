@@ -1,0 +1,21 @@
+{
+  "name": "AZYRA — Startup & Creator Growth Marketplace",
+  "short_name": "AZYRA",
+  "icons": [
+    {
+      "src": "/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "theme_color": "#07090E",
+  "background_color": "#07090E",
+  "display": "standalone"
+}

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { INITIAL_WHOP_BOUNTIES, WhopBountyPool } from "@/lib/bountiesData";
+import { INITIAL_BOUNTIES, BountyPool } from "@/lib/bountiesData";
 import {
   CheckCircle2,
   Clock,
@@ -28,7 +28,7 @@ import {
 export default function CampaignsPage() {
   const [activeTab, setActiveTab] = useState<"clips" | "briefs">("clips");
   const [filterCategory, setFilterCategory] = useState("all");
-  const [bounties, setBounties] = useState<WhopBountyPool[]>(INITIAL_WHOP_BOUNTIES);
+  const [bounties, setBounties] = useState<BountyPool[]>(INITIAL_BOUNTIES);
 
   const campaigns = [
     {
@@ -86,7 +86,7 @@ export default function CampaignsPage() {
       ? campaigns
       : campaigns.filter((c) => c.category === filterCategory);
 
-  const totalWhopBudget = bounties.reduce((sum, b) => sum + b.remainingBudget, 0);
+  const totalBountyBudget = bounties.reduce((sum, b) => sum + b.remainingBudget, 0);
   const totalViewsGenerated = bounties.reduce((sum, b) => sum + b.totalViewsGenerated, 0);
 
   return (
@@ -101,7 +101,7 @@ export default function CampaignsPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-4xl relative z-10">
             <span className="text-xs font-mono uppercase tracking-widest text-pink-400 bg-pink-500/10 px-4 py-1.5 rounded-full border border-pink-500/30 inline-flex items-center gap-1.5 font-bold shadow-lg">
               <Film className="w-4 h-4 text-pink-400" />
-              Whop Clips Content Rewards &amp; Escrow Marketplace
+              AZYRA Clips Content Rewards &amp; Escrow Marketplace
             </span>
 
             <h1 className="mt-4 text-4xl sm:text-7xl font-black text-white tracking-tight leading-[1.1]">
@@ -112,7 +112,7 @@ export default function CampaignsPage() {
             </h1>
 
             <p className="mt-4 text-slate-300 text-base sm:text-xl max-w-2xl mx-auto leading-relaxed">
-              Whop-style Content Rewards marketplace where startups fund short-form video bounty pools and clippers earn guaranteed CPM rates ($0.50 – $5.00 / 1K views).
+              AZYRA Content Rewards marketplace where startups fund short-form video bounty pools and clippers earn guaranteed CPM rates ($0.50 – $5.00 / 1K views).
             </p>
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
@@ -128,19 +128,19 @@ export default function CampaignsPage() {
                 href="/launch-campaign"
                 className="px-8 py-4 rounded-2xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.15] text-slate-200 font-semibold text-base backdrop-blur-md transition"
               >
-                Launch Whop Bounty Pool
+                Launch AZYRA Bounty Pool
               </Link>
             </div>
           </div>
         </section>
 
-        {/* Whop Clips Live Market Summary Banner */}
+        {/* AZYRA Clips Live Market Summary Banner */}
         <section className="py-8 bg-[#090C19] border-b border-white/[0.08]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs font-mono">
               <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08]">
-                <span className="text-slate-400 block uppercase mb-1">Live Whop Bounty Budget</span>
-                <span className="text-2xl font-black text-pink-400">${totalWhopBudget.toLocaleString()} USD</span>
+                <span className="text-slate-400 block uppercase mb-1">Live AZYRA Bounty Budget</span>
+                <span className="text-2xl font-black text-pink-400">${totalBountyBudget.toLocaleString()} USD</span>
               </div>
               <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08]">
                 <span className="text-slate-400 block uppercase mb-1">Total Verified Views</span>
@@ -160,7 +160,7 @@ export default function CampaignsPage() {
           </div>
         </section>
 
-        {/* Tab Switcher: Whop Clips vs Standard Briefs */}
+        {/* Tab Switcher: AZYRA Clips vs Standard Briefs */}
         <section className="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10">
             <div className="flex items-center p-1.5 rounded-2xl bg-white/[0.04] border border-white/[0.08]">
@@ -173,7 +173,7 @@ export default function CampaignsPage() {
                 }`}
               >
                 <Film className="w-4 h-4 text-pink-300" />
-                <span>Whop Content Rewards ($/1K Views)</span>
+                <span>AZYRA Content Rewards ($/1K Views)</span>
               </button>
 
               <button
@@ -191,12 +191,12 @@ export default function CampaignsPage() {
 
             <p className="text-xs text-slate-400 font-mono">
               {activeTab === "clips"
-                ? "⚡ Whop Model: Submit video link → Automatic view verification → Direct escrow payout per 1K views."
+                ? "⚡ AZYRA Model: Submit video link → Automatic view verification → Direct escrow payout per 1K views."
                 : "🔒 Escrow Model: Custom deliverables & fixed milestone payments per creator slot."}
             </p>
           </div>
 
-          {/* TAB 1: WHOP CLIPS CONTENT REWARDS MARKETPLACE */}
+          {/* TAB 1: AZYRA CLIPS CONTENT REWARDS MARKETPLACE */}
           {activeTab === "clips" && (
             <div className="space-y-6">
               {bounties.map((bounty) => (
@@ -272,7 +272,7 @@ export default function CampaignsPage() {
                     <div className="flex flex-col sm:flex-row lg:flex-col items-start lg:items-end justify-between gap-6 pt-6 lg:pt-0 border-t lg:border-t-0 border-white/[0.08] min-w-[250px]">
                       <div className="text-left lg:text-right space-y-1">
                         <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block font-semibold">
-                          Remaining Whop Bounty Pool
+                          Remaining AZYRA Bounty Pool
                         </span>
                         <span className="text-3xl font-black text-white font-mono text-pink-400 block">
                           ${bounty.remainingBudget.toLocaleString()} USD

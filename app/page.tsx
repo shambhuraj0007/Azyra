@@ -44,13 +44,13 @@ export default function Home() {
 
       <main className="relative z-10 flex-1">
         {/* Hero Section */}
-        <section className="relative pt-12 pb-16 md:pt-20 md:pb-24 overflow-hidden">
+        <section className="relative pt-6 pb-16 md:pt-8 md:pb-24 overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-4xl mx-auto space-y-8">
               {/* Badge */}
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono font-bold uppercase tracking-wider shadow-lg shadow-amber-950/40">
                 <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                Featuring Outbid.lol Style Attention Leaderboard
+                Featuring AZYRA  Attention Leaderboard
               </div>
 
               {/* Main Headline */}
@@ -63,7 +63,7 @@ export default function Home() {
 
               {/* Supporting Copy */}
               <p className="text-lg sm:text-xl text-slate-300 font-normal max-w-2xl mx-auto leading-relaxed">
-                AZYRA connects ambitious startups with creators, audiences, and growth opportunities — featuring a real-time pay-to-rank outbid leaderboard and Whop Content Rewards marketplace.
+                AZYRA connects ambitious startups with creators, audiences, and growth opportunities — featuring a real-time pay-to-rank leaderboard and Content Rewards marketplace.
               </p>
 
               {/* CTAs */}
@@ -73,7 +73,7 @@ export default function Home() {
                   className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-black font-extrabold text-base shadow-xl shadow-amber-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                 >
                   <Zap className="w-5 h-5 text-black fill-black" />
-                  <span>⚡ Outbid Leaders &amp; Rank #1</span>
+                  <span>⚡ Bid Higher &amp; Rank #1</span>
                 </Link>
 
                 <Link
@@ -81,7 +81,7 @@ export default function Home() {
                   className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-pink-500/20 hover:bg-pink-500/30 border border-pink-500/40 text-pink-300 font-bold text-base backdrop-blur-md transition-all flex items-center justify-center gap-2 group"
                 >
                   <Film className="w-5 h-5 text-pink-400" />
-                  <span>Whop Clips ($/1K Views)</span>
+                  <span>AZYRA campaigns</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
@@ -95,7 +95,7 @@ export default function Home() {
                 <span className="text-slate-600">·</span>
                 <span className="flex items-center gap-1.5 text-slate-300">
                   <Users className="w-4 h-4 text-purple-400" />
-                  Whop Clips Content Rewards
+                  AZYRA Clips Content Rewards
                 </span>
                 <span className="text-slate-600">·</span>
                 <span className="flex items-center gap-1.5 text-slate-300">
@@ -120,7 +120,7 @@ export default function Home() {
                 One Platform. A Whole Growth Ecosystem.
               </h2>
               <p className="mt-4 text-slate-300 text-base sm:text-lg">
-                Instead of fragmented channels, AZYRA unifies pay-to-rank leaderboards, creator collabs, and Whop clip bounty pools.
+                Instead of fragmented channels, AZYRA unifies pay-to-rank leaderboards, creator collabs, and clip bounty pools.
               </p>
             </div>
 
@@ -133,7 +133,7 @@ export default function Home() {
                   </div>
                   <h3 className="text-2xl font-bold text-white mb-3">Startups</h3>
                   <p className="text-slate-300 text-sm leading-relaxed mb-6">
-                    Build momentum from day one—launch your product, reach the right audience, and outbid competitors for front-page attention.
+                    Build momentum from day one—launch your product, reach the right audience, and bid for front-page attention.
                   </p>
                 </div>
                 <Link
@@ -152,7 +152,7 @@ export default function Home() {
                   </div>
                   <h3 className="text-2xl font-bold text-white mb-3">Creators &amp; Clippers</h3>
                   <p className="text-slate-300 text-sm leading-relaxed mb-6">
-                    Discover hand-picked campaigns, edit raw VOD footage, earn Whop CPM payouts ($/1K views), and grow your business.
+                    Discover hand-picked campaigns, edit raw VOD footage, earn AZYRA CPM payouts ($/1K views), and grow your business.
                   </p>
                 </div>
                 <Link
@@ -163,22 +163,22 @@ export default function Home() {
                 </Link>
               </div>
 
-              {/* Card 3: Outbid Leaderboard */}
+              {/* Card 3: AZYRA Leaderboard */}
               <div className="relative rounded-3xl p-8 bg-gradient-to-b from-[#1E1610] to-[#0E0A16] border border-amber-500/30 hover:border-amber-500/60 transition-all duration-300 flex flex-col justify-between group shadow-xl">
                 <div>
                   <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform text-amber-400">
                     🏆
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-3">Outbid.lol Leaderboard</h3>
+                  <h3 className="text-2xl font-bold text-white mb-3">AZYRA Bid Leaderboard</h3>
                   <p className="text-slate-300 text-sm leading-relaxed mb-6">
-                    Public attention market where rank is determined by total dollars paid. Outbid the top spot anytime.
+                    Public attention market where rank is determined by total dollars paid. Claim the top spot anytime.
                   </p>
                 </div>
                 <Link
                   href="/leaderboard"
                   className="inline-flex items-center gap-2 text-amber-400 hover:text-amber-300 font-semibold text-sm group-hover:translate-x-1 transition-all"
                 >
-                  <span>Explore Outbid Market →</span>
+                  <span>Explore Bid Market →</span>
                 </Link>
               </div>
             </div>
@@ -201,7 +201,7 @@ export default function Home() {
               {[
                 { step: "01", title: "Submit", desc: "Add your startup website or X profile starting with a minimum $10 bid." },
                 { step: "02", title: "Rank", desc: "Your spot is ordered strictly by cumulative total money spent." },
-                { step: "03", title: "Outbid", desc: "Overbid target positions by at least +$5 to instantly steal rank #1." },
+                { step: "03", title: "Bid Higher", desc: "Overbid target positions by at least +$5 to instantly steal rank #1." },
                 { step: "04", title: "Boost", desc: "Top up your bid difference anytime to retain top visibility." },
               ].map((item) => (
                 <div
@@ -224,7 +224,7 @@ export default function Home() {
               Ready to Claim the #1 Spot?
             </h2>
             <p className="mt-4 text-slate-300 text-base sm:text-lg">
-              Place a bid on the AZYRA Outbid Market and put your product directly in front of founders, creators, and investors.
+              Place a bid on the AZYRA Attention Market and put your product directly in front of founders, creators, and investors.
             </p>
             <div className="mt-8 flex justify-center">
               <Link

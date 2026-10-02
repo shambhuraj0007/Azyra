@@ -25,11 +25,23 @@ export const metadata: Metadata = {
     "Sponsorship",
     "Growth Ecosystem",
   ],
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
+  manifest: "/site.webmanifest",
   openGraph: {
     title: "AZYRA — Where Startups Get Seen & Creators Get Discovered",
     description:
       "A global growth marketplace where startups launch, creators collaborate, and the next big thing gets discovered.",
     type: "website",
+    images: ["/logo.png"],
   },
 };
 

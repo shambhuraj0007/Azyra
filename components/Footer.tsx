@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Rocket } from "lucide-react";
 import CampaignModal from "./CampaignModal";
 import CreatorModal from "./CreatorModal";
@@ -17,10 +18,16 @@ export default function Footer() {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
             {/* Branding column */}
             <div className="col-span-2">
-              <Link href="/" className="flex items-center gap-2 mb-4">
+              <Link href="/" className="flex items-center gap-2.5 mb-4 group inline-flex">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-500 to-pink-500 p-[1px]">
-                  <div className="w-full h-full bg-[#07090E] rounded-[7px] flex items-center justify-center">
-                    <Rocket className="w-4 h-4 text-indigo-400" />
+                  <div className="w-full h-full bg-white rounded-[7px] p-1 flex items-center justify-center">
+                    <Image
+                      src="/logo-mark.png"
+                      alt="AZYRA"
+                      width={20}
+                      height={20}
+                      className="w-auto h-5 object-contain group-hover:scale-105 transition-transform"
+                    />
                   </div>
                 </div>
                 <span className="text-xl font-black text-white tracking-tight">AZYRA</span>

@@ -18,12 +18,12 @@ import {
   Eye,
   Video,
 } from "lucide-react";
-import { WhopBountyPool } from "@/lib/bountiesData";
+import { BountyPool } from "@/lib/bountiesData";
 
 interface ClipSubmissionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  bounties: WhopBountyPool[];
+  bounties: BountyPool[];
   targetBountyId?: string | null;
   onSubmitClip: (bountyId: string, videoUrl: string, views: number, payout: number) => void;
 }
@@ -114,7 +114,7 @@ export default function ClipSubmissionModal({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-extrabold text-white text-lg">Whop Clips Content Rewards</h3>
+                <h3 className="font-extrabold text-white text-lg">AZYRA Clips Content Rewards</h3>
                 <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-pink-500/20 text-pink-300 border border-pink-500/30 uppercase">
                   Pay-Per-1K-Views (CPM)
                 </span>
@@ -147,7 +147,7 @@ export default function ClipSubmissionModal({
             {/* Target Bounty Selection */}
             <div>
               <label className="block text-xs font-mono uppercase text-pink-300 font-bold mb-2">
-                Select Whop Clips Bounty Campaign *
+                Select AZYRA Clips Bounty Campaign *
               </label>
               <select
                 value={selectedId}
@@ -273,7 +273,7 @@ export default function ClipSubmissionModal({
               <div className="flex items-center justify-between text-xs font-mono">
                 <span className="text-pink-300 font-bold flex items-center gap-1.5 uppercase">
                   <TrendingUp className="w-4 h-4 text-pink-400" />
-                  Whop CPM Earnings Calculator
+                  AZYRA CPM Earnings Calculator
                 </span>
                 <span className="text-slate-400">
                   Formula: ({viewCount.toLocaleString()} / 1,000) × ${selectedBounty?.cpmRate.toFixed(2)}
@@ -319,7 +319,7 @@ export default function ClipSubmissionModal({
                 />
                 <span>I confirm required hashtags ({selectedBounty?.hashtags.join(" ")}) are tagged in post.</span>
               </label>
-              <p className="text-[11px] text-slate-400 pt-1">• Whop API automatically verifies views and releases payouts upon link submission.</p>
+              <p className="text-[11px] text-slate-400 pt-1">• AZYRA automatically verifies views and releases payouts upon link submission.</p>
             </div>
 
             {/* Submit Button */}

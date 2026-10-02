@@ -15,6 +15,7 @@ import {
   Sparkles,
   ArrowUpRight,
   Clock,
+  Calendar,
 } from "lucide-react";
 import { OutbidListing, OUTBID_RULES } from "@/lib/outbidData";
 
@@ -23,18 +24,44 @@ interface OutbidSpotlightProps {
 }
 
 export default function OutbidSpotlight({ listings }: OutbidSpotlightProps) {
-  const [activeView, setActiveView] = useState<"alltime" | "today">("alltime");
+  const [activeView, setActiveView] = useState<"alltime" | "weekly" | "daily">("alltime");
 
-  const sorted = [...listings].sort((a, b) =>
-    activeView === "alltime" ? b.totalBid - a.totalBid : b.todayBid - a.todayBid
-  );
+  const sorted = [...listings].sort((a, b) => {
+    if (activeView === "daily") return b.todayBid - a.todayBid;
+    if (activeView === "weekly") return (b.weekBid || 0) - (a.weekBid || 0);
+    return b.totalBid - a.totalBid;
+  });
 
   const top1 = sorted[0];
   const top2 = sorted[1];
   const top3 = sorted[2];
 
+  const getDisplayBid = (item?: OutbidListing) => {
+    if (!item) return 0;
+    if (activeView === "daily") return item.todayBid;
+    if (activeView === "weekly") return item.weekBid;
+    return item.totalBid;
+  };
+
+  const getDisplayBidLabel = () => {
+    if (activeView === "daily") return "Today 24h Bid";
+    if (activeView === "weekly") return "This Week (7d) Bid";
+    return "Total Bid Spent";
+  };
+
+  const activeTopBid = getDisplayBid(top1);
+  const minToTakeTop = activeTopBid + OUTBID_RULES.MIN_OVERBID_DIFFERENCE;
+
   const totalMarketVolume = listings.reduce((sum, item) => sum + item.totalBid, 0);
-  const minToTakeTop = (top1?.totalBid || 0) + OUTBID_RULES.MIN_OVERBID_DIFFERENCE;
+  const weeklyMarketVolume = listings.reduce((sum, item) => sum + (item.weekBid || 0), 0);
+  const dailyMarketVolume = listings.reduce((sum, item) => sum + item.todayBid, 0);
+
+  const currentVolume =
+    activeView === "daily"
+      ? dailyMarketVolume
+      : activeView === "weekly"
+        ? weeklyMarketVolume
+        : totalMarketVolume;
 
   return (
     <div className="relative rounded-3xl p-1 bg-gradient-to-b from-amber-500/30 via-purple-500/20 to-indigo-500/20 shadow-2xl shadow-amber-950/40 overflow-hidden">
@@ -43,73 +70,106 @@ export default function OutbidSpotlight({ listings }: OutbidSpotlightProps) {
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-[140px] pointer-events-none" />
 
         {/* Live Ticker Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-4 p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs">
-          <div className="flex items-center gap-2 font-mono text-amber-300 font-bold uppercase tracking-wider">
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping" />
-            <span>Outbid.lol Live Attention Market</span>
-          </div>
-
-          <div className="flex items-center gap-6 text-slate-300 font-mono text-[11px] overflow-x-auto whitespace-nowrap py-1">
-            <span className="flex items-center gap-1.5 text-amber-300 font-bold">
-              👑 #1 Champion: {top1?.name} (${top1?.totalBid.toLocaleString()})
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25 shadow-lg shadow-amber-950/20 backdrop-blur-md text-sm md:text-base font-mono text-center">
+          <div className="flex items-center gap-2 text-amber-300 font-bold tracking-tight">
+            <span className="text-base md:text-lg">👑</span>
+            <span>
+              {activeView === "daily"
+                ? "Daily #1:"
+                : activeView === "weekly"
+                  ? "Weekly #1:"
+                  : "All-Time #1:"}
             </span>
-            <span className="text-slate-600">•</span>
-            <span className="text-emerald-400">
-              ⚡ Min to capture #1: ${minToTakeTop.toLocaleString()}
-            </span>
-            <span className="text-slate-600">•</span>
-            <span className="text-indigo-300">
-              📊 Total Market Volume: ${totalMarketVolume.toLocaleString()}
+            <span className="text-white drop-shadow-sm">
+              {top1?.name} (${activeTopBid?.toLocaleString()})
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setActiveView("alltime")}
-              className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition ${
-                activeView === "alltime"
-                  ? "bg-amber-500 text-black shadow"
-                  : "bg-white/[0.05] text-slate-400 hover:text-white"
-              }`}
-            >
-              All-Time
-            </button>
-            <button
-              onClick={() => setActiveView("today")}
-              className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition ${
-                activeView === "today"
-                  ? "bg-amber-500 text-black shadow"
-                  : "bg-white/[0.05] text-slate-400 hover:text-white"
-              }`}
-            >
-              Today UTC
-            </button>
+          <span className="hidden sm:inline-block text-amber-500/40 select-none">•</span>
+
+          <div className="flex items-center gap-2 text-emerald-400 font-medium">
+            <span className="text-base md:text-lg">⚡</span>
+            <span>Min to steal #1:</span>
+            <span className="font-bold text-emerald-300">
+              ${minToTakeTop?.toLocaleString()}
+            </span>
+          </div>
+
+          <span className="hidden sm:inline-block text-amber-500/40 select-none">•</span>
+
+          <div className="flex items-center gap-2 text-indigo-300 font-medium">
+            <span className="text-base md:text-lg">📊</span>
+            <span>
+              {activeView === "daily"
+                ? "Today's Volume:"
+                : activeView === "weekly"
+                  ? "Weekly Volume:"
+                  : "Total Volume:"}
+            </span>
+            <span className="font-bold text-indigo-200">
+              ${currentVolume?.toLocaleString()}
+            </span>
           </div>
         </div>
 
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <span className="text-xs font-mono uppercase tracking-widest text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20 inline-flex items-center gap-1.5 font-bold">
-              <Zap className="w-3.5 h-3.5 text-amber-400" />
-              Pay-To-Rank Leaderboard
-            </span>
             <h2 className="text-2xl md:text-4xl font-black text-white mt-2 tracking-tight">
               Pay Is Rank. Rank Is Attention.
             </h2>
             <p className="text-slate-300 text-sm md:text-base mt-1 max-w-xl">
-              No review queues or algorithm feeds. Startups bid to command top slots in real-time.
+              No review queues or algorithm feeds. Startups bid to command top slots in real-time across daily, weekly, and all-time boards.
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            {/* 3-Way Timeframe Switcher */}
+            <div className="flex items-center p-1 rounded-xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-md">
+              <button
+                type="button"
+                onClick={() => setActiveView("alltime")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition ${
+                  activeView === "alltime"
+                    ? "bg-amber-500 text-black shadow-md shadow-amber-500/20"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                All-Time
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveView("weekly")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition flex items-center gap-1 ${
+                  activeView === "weekly"
+                    ? "bg-amber-500 text-black shadow-md shadow-amber-500/20"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                <span>Weekly</span>
+                <span className={`text-[10px] px-1 py-0.2 rounded font-mono ${activeView === "weekly" ? "bg-black/25 text-black" : "bg-white/10 text-slate-300"}`}>7D</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveView("daily")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition flex items-center gap-1 ${
+                  activeView === "daily"
+                    ? "bg-amber-500 text-black shadow-md shadow-amber-500/20"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                <span>Daily</span>
+                <span className={`text-[10px] px-1 py-0.2 rounded font-mono ${activeView === "daily" ? "bg-black/25 text-black" : "bg-white/10 text-slate-300"}`}>24H</span>
+              </button>
+            </div>
+
             <Link
               href={`/outbid?id=${top1?.id}`}
-              className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-black font-extrabold text-sm shadow-xl shadow-amber-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 group"
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-black font-extrabold text-xs shadow-xl shadow-amber-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 group"
             >
-              <Zap className="w-4 h-4 text-black fill-black" />
-              <span>Outbid #1 Spot (${minToTakeTop.toLocaleString()})</span>
-              <ArrowUpRight className="w-4 h-4 text-black group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <Zap className="w-3.5 h-3.5 text-black fill-black" />
+              <span>Bid for #1 (${minToTakeTop.toLocaleString()})</span>
+              <ArrowUpRight className="w-3.5 h-3.5 text-black group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </Link>
           </div>
         </div>
@@ -119,7 +179,12 @@ export default function OutbidSpotlight({ listings }: OutbidSpotlightProps) {
           {top1 && (
             <div className="relative rounded-3xl p-6 bg-gradient-to-b from-amber-500/20 via-[#13101E] to-[#0A0D1B] border-2 border-amber-500/50 shadow-2xl shadow-amber-500/10 group flex flex-col justify-between">
               <div className="absolute -top-3 left-6 px-3 py-1 rounded-full bg-amber-500 text-black font-extrabold font-mono text-xs shadow-lg flex items-center gap-1">
-                <Crown className="w-3.5 h-3.5 fill-black" /> #01 CHAMPION
+                <Crown className="w-3.5 h-3.5 fill-black" />
+                {activeView === "daily"
+                  ? "#01 DAILY CHAMPION"
+                  : activeView === "weekly"
+                    ? "#01 WEEKLY CHAMPION"
+                    : "#01 ALL-TIME CHAMPION"}
               </div>
 
               <div>
@@ -134,10 +199,10 @@ export default function OutbidSpotlight({ listings }: OutbidSpotlightProps) {
                   </div>
                   <div className="text-right">
                     <span className="text-[10px] font-mono text-slate-400 block uppercase">
-                      Total Bid Spent
+                      {getDisplayBidLabel()}
                     </span>
                     <span className="text-2xl font-black text-amber-400 font-mono">
-                      ${top1.totalBid.toLocaleString()}
+                      ${getDisplayBid(top1).toLocaleString()}
                     </span>
                   </div>
                 </div>
@@ -161,7 +226,7 @@ export default function OutbidSpotlight({ listings }: OutbidSpotlightProps) {
                   href={`/outbid?id=${top1.id}`}
                   className="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold transition"
                 >
-                  Outbid #1 🔥
+                  Bid for #1 🔥
                 </Link>
               </div>
             </div>
@@ -170,7 +235,7 @@ export default function OutbidSpotlight({ listings }: OutbidSpotlightProps) {
           {top2 && (
             <div className="relative rounded-3xl p-6 bg-gradient-to-b from-indigo-500/15 via-[#101326] to-[#0A0D1B] border border-indigo-500/30 shadow-xl group flex flex-col justify-between">
               <div className="absolute -top-3 left-6 px-3 py-0.5 rounded-full bg-slate-300 text-black font-extrabold font-mono text-xs shadow">
-                🥈 #02 SPOT
+                🥈 {activeView === "daily" ? "#02 TODAY" : activeView === "weekly" ? "#02 THIS WEEK" : "#02 SPOT"}
               </div>
 
               <div>
@@ -185,10 +250,10 @@ export default function OutbidSpotlight({ listings }: OutbidSpotlightProps) {
                   </div>
                   <div className="text-right">
                     <span className="text-[10px] font-mono text-slate-400 block uppercase">
-                      Total Bid Spent
+                      {getDisplayBidLabel()}
                     </span>
                     <span className="text-2xl font-black text-slate-200 font-mono">
-                      ${top2.totalBid.toLocaleString()}
+                      ${getDisplayBid(top2).toLocaleString()}
                     </span>
                   </div>
                 </div>
@@ -212,7 +277,7 @@ export default function OutbidSpotlight({ listings }: OutbidSpotlightProps) {
                   href={`/outbid?id=${top2.id}`}
                   className="px-3 py-1.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/40 text-xs font-bold transition"
                 >
-                  Outbid Spot ⚡
+                  Bid for Spot ⚡
                 </Link>
               </div>
             </div>
@@ -221,7 +286,7 @@ export default function OutbidSpotlight({ listings }: OutbidSpotlightProps) {
           {top3 && (
             <div className="relative rounded-3xl p-6 bg-gradient-to-b from-purple-500/15 via-[#131024] to-[#0A0D1B] border border-purple-500/30 shadow-xl group flex flex-col justify-between">
               <div className="absolute -top-3 left-6 px-3 py-0.5 rounded-full bg-amber-700 text-white font-extrabold font-mono text-xs shadow">
-                🥉 #03 SPOT
+                🥉 {activeView === "daily" ? "#03 TODAY" : activeView === "weekly" ? "#03 THIS WEEK" : "#03 SPOT"}
               </div>
 
               <div>
@@ -236,10 +301,10 @@ export default function OutbidSpotlight({ listings }: OutbidSpotlightProps) {
                   </div>
                   <div className="text-right">
                     <span className="text-[10px] font-mono text-slate-400 block uppercase">
-                      Total Bid Spent
+                      {getDisplayBidLabel()}
                     </span>
                     <span className="text-2xl font-black text-purple-300 font-mono">
-                      ${top3.totalBid.toLocaleString()}
+                      ${getDisplayBid(top3).toLocaleString()}
                     </span>
                   </div>
                 </div>
@@ -263,7 +328,7 @@ export default function OutbidSpotlight({ listings }: OutbidSpotlightProps) {
                   href={`/outbid?id=${top3.id}`}
                   className="px-3 py-1.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/40 text-xs font-bold transition"
                 >
-                  Outbid Spot ⚡
+                  Bid for Spot ⚡
                 </Link>
               </div>
             </div>
@@ -283,7 +348,7 @@ export default function OutbidSpotlight({ listings }: OutbidSpotlightProps) {
             href="/leaderboard"
             className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.15] text-slate-200 hover:text-white font-bold text-xs transition text-center flex items-center justify-center gap-2 group"
           >
-            <span>View Full Outbid Leaderboard ({listings.length} Listings)</span>
+            <span>View Full AZYRA Leaderboard ({listings.length} Listings)</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-amber-400" />
           </Link>
         </div>

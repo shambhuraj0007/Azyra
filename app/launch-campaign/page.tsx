@@ -82,7 +82,7 @@ export default function LaunchCampaignPage() {
                 <div>
                   <h1 className="text-2xl sm:text-3xl font-black text-white">Launch Escrow Campaign</h1>
                   <p className="text-xs text-slate-400 mt-1">
-                    Fund Whop Clips Bounties or Milestone Briefs for verified independent creators
+                    Fund AZYRA Clips Bounties or Milestone Briefs for verified independent creators
                   </p>
                 </div>
               </div>
@@ -112,7 +112,7 @@ export default function LaunchCampaignPage() {
                     }`}
                   >
                     <Film className="w-4 h-4 text-pink-300" />
-                    <span>Whop Clips Bounty ($/1K Views)</span>
+                    <span>AZYRA Clips Bounty ($/1K Views)</span>
                   </button>
                   <button
                     type="button"

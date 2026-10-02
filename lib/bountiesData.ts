@@ -1,4 +1,4 @@
-export interface WhopBountyPool {
+export interface BountyPool {
   id: string;
   title: string;
   startup: string;
@@ -16,10 +16,10 @@ export interface WhopBountyPool {
   description: string;
 }
 
-export const INITIAL_WHOP_BOUNTIES: WhopBountyPool[] = [
+export const INITIAL_BOUNTIES: BountyPool[] = [
   {
     id: "novaai-tiktok-clips",
-    title: "NovaAI AI Coding Workflows - Whop Clips Bounty",
+    title: "NovaAI AI Coding Workflows - AZYRA Clips Bounty",
     startup: "NovaAI",
     logo: "🚀",
     category: "TikTok",

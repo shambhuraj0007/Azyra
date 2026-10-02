@@ -3,9 +3,12 @@
 import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { INITIAL_OUTBID_LISTINGS, OutbidListing, OUTBID_RULES } from "@/lib/outbidData";
+import WalletApplyWidget from "@/components/WalletApplyWidget";
+import { applyWalletCredits } from "@/lib/walletStore";
 import {
   ArrowLeft,
   Zap,
@@ -37,8 +40,12 @@ function OutbidForm() {
   const [category, setCategory] = useState("AI & Productivity");
   const [tagline, setTagline] = useState("");
   const [bidAmount, setBidAmount] = useState<number>(50);
+  const [walletDiscount, setWalletDiscount] = useState<number>(0);
+  const [walletCreditsUsed, setWalletCreditsUsed] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const { data: session } = useSession();
 
   const sortedListings = [...listings].sort((a, b) => b.totalBid - a.totalBid);
   const currentTop = sortedListings[0];
@@ -96,13 +103,29 @@ function OutbidForm() {
 
     setIsSubmitting(true);
 
+    const userEmail = session?.user?.email || "founder@startup.com";
+    const targetTitle =
+      mode === "boost"
+        ? listings.find((l) => l.id === selectedId)?.name || "Product"
+        : name || "Product";
+
+    if (walletCreditsUsed > 0) {
+      applyWalletCredits(userEmail, walletCreditsUsed, targetTitle);
+    }
+
+    const netPayable = Math.max(0, bidAmount - walletDiscount);
+
     setTimeout(() => {
       setIsSubmitting(false);
-      setSuccessMessage(`🔥 SUCCESS! Placed a $${bidAmount} bid. Claimed Rank #${projected.rank}!`);
+      setSuccessMessage(
+        walletDiscount > 0
+          ? `🔥 SUCCESS! Placed $${bidAmount} bid (saved $${walletDiscount.toFixed(2)} using ${walletCreditsUsed.toLocaleString()} wallet credits. Paid $${netPayable.toFixed(2)} USD). Claimed Rank #${projected.rank}!`
+          : `🔥 SUCCESS! Placed a $${bidAmount} bid. Claimed Rank #${projected.rank}!`
+      );
 
       setTimeout(() => {
         router.push("/leaderboard");
-      }, 2000);
+      }, 2200);
     }, 1000);
   };
 
@@ -115,7 +138,7 @@ function OutbidForm() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] text-xs font-mono font-bold text-slate-300 hover:text-white transition"
         >
           <ArrowLeft className="w-4 h-4 text-amber-400" />
-          <span>Back to Outbid Leaderboard</span>
+          <span>Back to AZYRA Leaderboard</span>
         </Link>
       </div>
 
@@ -131,7 +154,7 @@ function OutbidForm() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl sm:text-3xl font-black text-white">Outbid.lol Bidding Console</h1>
+                <h1 className="text-2xl sm:text-3xl font-black text-white">AZYRA Bidding Console</h1>
                 <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase">
                   Pay-to-Rank
                 </span>
@@ -182,7 +205,7 @@ function OutbidForm() {
                 }`}
               >
                 <Flame className="w-4 h-4 text-amber-300" />
-                <span>Outbid / Boost Existing Listing</span>
+                <span>Boost / Bid Higher on Existing</span>
               </button>
             </div>
 
@@ -190,7 +213,7 @@ function OutbidForm() {
             {mode === "boost" && (
               <div>
                 <label className="block text-xs font-mono uppercase text-slate-300 font-extrabold mb-2">
-                  Select Product to Outbid / Boost *
+                  Select Product to Boost / Bid Higher *
                 </label>
                 <select
                   value={selectedId}
@@ -219,7 +242,7 @@ function OutbidForm() {
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g. Acme AI, Outbid Engine"
+                    placeholder="e.g. Acme AI, Growth Engine"
                     className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.1] text-white text-sm focus:outline-none focus:border-amber-500"
                   />
                 </div>
@@ -380,7 +403,7 @@ function OutbidForm() {
               <div className="space-y-1">
                 <span className="text-xs font-mono uppercase tracking-wider text-amber-300 font-extrabold flex items-center gap-1.5">
                   <TrendingUp className="w-4 h-4 text-amber-400" />
-                  Live Outbid Projection
+                  Live Bid Projection
                 </span>
                 <p className="text-xs text-slate-300">
                   {mode === "boost" && selectedId
@@ -406,6 +429,20 @@ function OutbidForm() {
               </div>
             </div>
 
+            {/* Flipkart-Style Wallet Balance Application */}
+            <WalletApplyWidget
+              bidAmount={bidAmount}
+              onDiscountChange={(discount, credits) => {
+                setWalletDiscount(discount);
+                setWalletCreditsUsed(credits);
+              }}
+              targetListingName={
+                mode === "boost"
+                  ? listings.find((l) => l.id === selectedId)?.name
+                  : name
+              }
+            />
+
             {/* Submit CTA */}
             <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
               <button
@@ -414,11 +451,17 @@ function OutbidForm() {
                 className="w-full sm:flex-1 py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-black font-black text-base shadow-xl shadow-amber-500/25 transition flex items-center justify-center gap-2 group disabled:opacity-50"
               >
                 {isSubmitting ? (
-                  <span>Broadcasting Outbid Signal...</span>
+                  <span>Broadcasting Bid Signal...</span>
                 ) : (
                   <>
                     <Zap className="w-5 h-5 text-black fill-black" />
-                    <span>Place ${bidAmount.toLocaleString()} Bid &amp; Claim Rank #{projected.rank}</span>
+                    <span>
+                      Place ${bidAmount.toLocaleString()} Bid
+                      {walletDiscount > 0
+                        ? ` (Pay $${Math.max(0, bidAmount - walletDiscount).toFixed(2)})`
+                        : ""}{" "}
+                      &amp; Claim Rank #{projected.rank}
+                    </span>
                     <ArrowUpRight className="w-5 h-5 text-black group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                   </>
                 )}
@@ -443,7 +486,7 @@ export default function OutbidPage() {
     <div className="min-h-screen bg-[#07090E] text-slate-100 flex flex-col selection:bg-amber-500/30 selection:text-amber-200">
       <Navbar />
       <main className="flex-1">
-        <Suspense fallback={<div className="text-center py-20 text-slate-400 font-mono">Loading outbid console...</div>}>
+        <Suspense fallback={<div className="text-center py-20 text-slate-400 font-mono">Loading bidding console...</div>}>
           <OutbidForm />
         </Suspense>
       </main>

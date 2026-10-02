@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
@@ -89,11 +90,18 @@ export default function LoginPage() {
             <div className="text-center mb-8">
               <Link href="/" className="inline-flex items-center gap-2 mb-3 group">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 p-[1px] shadow-lg shadow-indigo-500/20">
-                  <div className="w-full h-full bg-[#090C15] rounded-[11px] flex items-center justify-center">
-                    <Rocket className="w-5 h-5 text-indigo-400" />
+                  <div className="w-full h-full bg-white rounded-[11px] p-1.5 flex items-center justify-center">
+                    <Image
+                      src="/logo-mark.png"
+                      alt="AZYRA"
+                      width={28}
+                      height={28}
+                      priority
+                      className="w-auto h-6 object-contain group-hover:scale-110 transition-transform duration-300"
+                    />
                   </div>
                 </div>
-                <span className="text-2xl font-black tracking-tight text-white">AZYRA</span>
+                <span className="text-2xl font-black tracking-tight text-white font-sans">AZYRA</span>
               </Link>
               <h1 className="text-2xl font-black text-white">Welcome Back</h1>
               <p className="text-xs text-slate-400 mt-1">

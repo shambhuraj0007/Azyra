@@ -1,6 +1,5 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import {
   X,
   Zap,
@@ -16,6 +15,8 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { OutbidListing, OUTBID_RULES } from "@/lib/outbidData";
+import WalletApplyWidget from "@/components/WalletApplyWidget";
+import { applyWalletCredits } from "@/lib/walletStore";
 
 interface OutbidModalProps {
   isOpen: boolean;
@@ -40,8 +41,12 @@ export default function OutbidModal({
   const [category, setCategory] = useState("AI & Productivity");
   const [tagline, setTagline] = useState("");
   const [bidAmount, setBidAmount] = useState<number>(50);
+  const [walletDiscount, setWalletDiscount] = useState<number>(0);
+  const [walletCreditsUsed, setWalletCreditsUsed] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const { data: session } = useSession();
 
   // Sorted listings by total bid descending
   const sortedListings = [...listings].sort((a, b) => b.totalBid - a.totalBid);
@@ -104,6 +109,16 @@ export default function OutbidModal({
 
     setIsSubmitting(true);
 
+    const userEmail = session?.user?.email || "founder@startup.com";
+    const targetTitle =
+      mode === "boost" && selectedId
+        ? listings.find((l) => l.id === selectedId)?.name || "Product"
+        : name || "Product";
+
+    if (walletCreditsUsed > 0) {
+      applyWalletCredits(userEmail, walletCreditsUsed, targetTitle);
+    }
+
     setTimeout(() => {
       let updatedOrNewItem: OutbidListing;
 
@@ -112,6 +127,7 @@ export default function OutbidModal({
         updatedOrNewItem = {
           ...existing,
           totalBid: existing.totalBid + bidAmount,
+          weekBid: (existing.weekBid || 0) + bidAmount,
           todayBid: existing.todayBid + bidAmount,
           bidCount: existing.bidCount + 1,
           updatedAt: new Date().toISOString(),
@@ -121,11 +137,12 @@ export default function OutbidModal({
         updatedOrNewItem = {
           id: slug,
           name: name || "My Product",
-          tagline: tagline || "Revolutionary new product on AZYRA outbid market",
+          tagline: tagline || "Revolutionary new product on AZYRA attention market",
           url: url.startsWith("http") ? url : `https://${url || "myproduct.io"}`,
           twitter: twitter ? (twitter.startsWith("@") ? twitter : `@${twitter}`) : undefined,
           category,
           totalBid: bidAmount,
+          weekBid: bidAmount,
           todayBid: bidAmount,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
@@ -135,12 +152,18 @@ export default function OutbidModal({
 
       onBidSubmitted(updatedOrNewItem);
       setIsSubmitting(false);
-      setSuccessMessage(`🔥 SUCCESS! You placed a $${bidAmount} bid. Ranked #${projected.rank}!`);
+
+      const netPayable = Math.max(0, bidAmount - walletDiscount);
+      setSuccessMessage(
+        walletDiscount > 0
+          ? `🔥 SUCCESS! Placed $${bidAmount} bid (saved $${walletDiscount.toFixed(2)} with ${walletCreditsUsed.toLocaleString()} wallet credits. Paid $${netPayable.toFixed(2)}). Ranked #${projected.rank}!`
+          : `🔥 SUCCESS! You placed a $${bidAmount} bid. Ranked #${projected.rank}!`
+      );
 
       setTimeout(() => {
         setSuccessMessage(null);
         onClose();
-      }, 1800);
+      }, 2000);
     }, 800);
   };
 
@@ -159,7 +182,7 @@ export default function OutbidModal({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-extrabold text-white text-lg">Outbid.lol Attention Market</h3>
+                <h3 className="font-extrabold text-white text-lg">AZYRA Attention Market</h3>
                 <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase">
                   Pay-to-Rank
                 </span>
@@ -216,7 +239,7 @@ export default function OutbidModal({
                 }`}
               >
                 <Flame className="w-4 h-4 text-amber-300" />
-                <span>Outbid / Boost Existing</span>
+                <span>Boost / Bid Higher</span>
               </button>
             </div>
 
@@ -224,7 +247,7 @@ export default function OutbidModal({
             {mode === "boost" && (
               <div>
                 <label className="block text-xs font-mono uppercase text-slate-300 font-semibold mb-2">
-                  Select Product to Outbid / Boost
+                  Select Product to Boost / Bid Higher
                 </label>
                 <select
                   value={selectedId}
@@ -253,7 +276,7 @@ export default function OutbidModal({
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g. Acme AI, Outbid Engine"
+                    placeholder="e.g. Acme AI, Growth Engine"
                     className="w-full px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.1] text-white text-sm focus:outline-none focus:border-amber-500"
                   />
                 </div>
@@ -414,7 +437,7 @@ export default function OutbidModal({
               <div className="space-y-1">
                 <span className="text-[11px] font-mono uppercase tracking-wider text-amber-300 font-bold flex items-center gap-1">
                   <TrendingUp className="w-3.5 h-3.5 text-amber-400" />
-                  Live Outbid Projection
+                  Live Bid Projection
                 </span>
                 <p className="text-xs text-slate-300">
                   {mode === "boost" && selectedId
@@ -443,9 +466,23 @@ export default function OutbidModal({
             {/* Rules reminder */}
             <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] text-[11px] text-slate-400 space-y-1 font-mono">
               <p>• <strong>Pay-to-Rank Rule:</strong> Listings are ordered strictly by total cumulative dollars spent.</p>
-              <p>• <strong>Outbid Rule:</strong> Beat current #1 by at least $5 to steal the top spot.</p>
+              <p>• <strong>Bid Rule:</strong> Beat current #1 by at least $5 to steal the top spot.</p>
               <p>• <strong>Tiebreaker:</strong> Older listings retain position if total bids are identical.</p>
             </div>
+
+            {/* Flipkart-Style Wallet Balance Application */}
+            <WalletApplyWidget
+              bidAmount={bidAmount}
+              onDiscountChange={(discount, credits) => {
+                setWalletDiscount(discount);
+                setWalletCreditsUsed(credits);
+              }}
+              targetListingName={
+                mode === "boost" && selectedId
+                  ? listings.find((l) => l.id === selectedId)?.name
+                  : name
+              }
+            />
 
             {/* Submit CTA */}
             <button
@@ -454,11 +491,17 @@ export default function OutbidModal({
               className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-black font-extrabold text-base shadow-xl shadow-amber-500/20 transition flex items-center justify-center gap-2 group disabled:opacity-50"
             >
               {isSubmitting ? (
-                <span>Broadcasting Outbid Signal...</span>
+                <span>Broadcasting Bid Signal...</span>
               ) : (
                 <>
                   <Zap className="w-5 h-5 text-black fill-black" />
-                  <span>Place ${bidAmount.toLocaleString()} Bid &amp; Claim Rank #{projected.rank}</span>
+                  <span>
+                    Place ${bidAmount.toLocaleString()} Bid
+                    {walletDiscount > 0
+                      ? ` (Pay $${Math.max(0, bidAmount - walletDiscount).toFixed(2)})`
+                      : ""}{" "}
+                    &amp; Claim Rank #{projected.rank}
+                  </span>
                   <ArrowUpRight className="w-5 h-5 text-black group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </>
               )}

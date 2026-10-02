@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CreatorModal from "@/components/CreatorModal";
 import ClipSubmissionModal from "@/components/ClipSubmissionModal";
-import { INITIAL_WHOP_BOUNTIES, WhopBountyPool } from "@/lib/bountiesData";
+import { INITIAL_BOUNTIES, BountyPool } from "@/lib/bountiesData";
 import {
   Sparkles,
   Compass,
@@ -28,7 +28,7 @@ export default function CreatorsPage() {
   const [creatorModalOpen, setCreatorModalOpen] = useState(false);
   const [clipModalOpen, setClipModalOpen] = useState(false);
   const [targetBountyId, setTargetBountyId] = useState<string | null>(null);
-  const [bounties, setBounties] = useState<WhopBountyPool[]>(INITIAL_WHOP_BOUNTIES);
+  const [bounties, setBounties] = useState<BountyPool[]>(INITIAL_BOUNTIES);
 
   const [audienceSize, setAudienceSize] = useState<number>(25); // in thousands
   const [campaignsPerMonth, setCampaignsPerMonth] = useState<number>(3);
@@ -74,7 +74,7 @@ export default function CreatorsPage() {
               </span>
             </h1>
             <p className="mt-4 text-slate-300 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
-              Discover startups, apply to fixed briefs, or participate in <strong>Whop Clips Content Rewards</strong> to earn guaranteed CPM payouts ($0.50 – $5.00 per 1,000 views).
+              Discover startups, apply to fixed briefs, or participate in <strong>AZYRA Clips Content Rewards</strong> to earn guaranteed CPM payouts ($0.50 – $5.00 per 1,000 views).
             </p>
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
@@ -96,13 +96,13 @@ export default function CreatorsPage() {
           </div>
         </section>
 
-        {/* FEATURE HIGHLIGHT: WHOP CLIPS BOUNTIES FOR CLIPPERS */}
+        {/* FEATURE HIGHLIGHT: AZYRA CLIPS BOUNTIES FOR CLIPPERS */}
         <section className="py-16 bg-[#090C19] border-b border-white/[0.08]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
               <div>
                 <span className="text-xs font-mono uppercase tracking-widest text-pink-400 font-bold bg-pink-500/10 px-3 py-1 rounded-full border border-pink-500/20">
-                  Whop Content Rewards Model
+                  AZYRA Content Rewards Model
                 </span>
                 <h2 className="text-2xl sm:text-4xl font-black text-white mt-2">
                   Clippers &amp; Short-Form Creator Hub
@@ -116,7 +116,7 @@ export default function CreatorsPage() {
                 href="/campaigns"
                 className="px-5 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.12] text-slate-200 font-mono text-xs font-bold transition flex items-center gap-2"
               >
-                <span>Browse All Whop Bounties →</span>
+                <span>Browse All AZYRA Bounties →</span>
               </Link>
             </div>
 
@@ -176,7 +176,7 @@ export default function CreatorsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
-                title: "Whop Pay-Per-1K-Views Bounties",
+                title: "AZYRA Pay-Per-1K-Views Bounties",
                 desc: "Clip raw VOD footage into TikToks/Shorts and earn guaranteed CPM rates ($0.50 – $5.00 / 1K views) with automatic view verification.",
                 icon: Film,
               },
