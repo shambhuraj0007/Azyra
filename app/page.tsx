@@ -4,10 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import CampaignModal from "@/components/CampaignModal";
-import CreatorModal from "@/components/CreatorModal";
 import OutbidSpotlight from "@/components/OutbidSpotlight";
-import OutbidModal from "@/components/OutbidModal";
 import { INITIAL_OUTBID_LISTINGS, OutbidListing } from "@/lib/outbidData";
 import {
   Rocket,
@@ -26,32 +23,11 @@ import {
   CheckCircle2,
   Zap,
   Trophy,
+  Film,
 } from "lucide-react";
 
 export default function Home() {
-  const [campaignModalOpen, setCampaignModalOpen] = useState(false);
-  const [creatorModalOpen, setCreatorModalOpen] = useState(false);
   const [outbidListings, setOutbidListings] = useState<OutbidListing[]>(INITIAL_OUTBID_LISTINGS);
-  const [outbidModalOpen, setOutbidModalOpen] = useState(false);
-  const [targetOutbidId, setTargetOutbidId] = useState<string | null>(null);
-
-  const handleOpenOutbidModal = (listingId?: string) => {
-    setTargetOutbidId(listingId || null);
-    setOutbidModalOpen(true);
-  };
-
-  const handleBidSubmitted = (newOrUpdatedItem: OutbidListing) => {
-    setOutbidListings((prev) => {
-      const index = prev.findIndex((item) => item.id === newOrUpdatedItem.id);
-      if (index >= 0) {
-        const copy = [...prev];
-        copy[index] = newOrUpdatedItem;
-        return copy;
-      } else {
-        return [newOrUpdatedItem, ...prev];
-      }
-    });
-  };
 
   return (
     <div className="min-h-screen bg-[#07090E] text-slate-100 flex flex-col relative selection:bg-amber-500/30 selection:text-amber-200">
@@ -87,24 +63,25 @@ export default function Home() {
 
               {/* Supporting Copy */}
               <p className="text-lg sm:text-xl text-slate-300 font-normal max-w-2xl mx-auto leading-relaxed">
-                AZYRA connects ambitious startups with creators, audiences, and growth opportunities — featuring a real-time pay-to-rank outbid leaderboard where rank is what you pay.
+                AZYRA connects ambitious startups with creators, audiences, and growth opportunities — featuring a real-time pay-to-rank outbid leaderboard and Whop Content Rewards marketplace.
               </p>
 
               {/* CTAs */}
               <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
-                <button
-                  onClick={() => handleOpenOutbidModal()}
+                <Link
+                  href="/outbid"
                   className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-black font-extrabold text-base shadow-xl shadow-amber-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                 >
                   <Zap className="w-5 h-5 text-black fill-black" />
                   <span>⚡ Outbid Leaders &amp; Rank #1</span>
-                </button>
+                </Link>
+
                 <Link
-                  href="/leaderboard"
-                  className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.15] text-slate-200 hover:text-white font-semibold text-base backdrop-blur-md transition-all flex items-center justify-center gap-2 group"
+                  href="/submit-clip"
+                  className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-pink-500/20 hover:bg-pink-500/30 border border-pink-500/40 text-pink-300 font-bold text-base backdrop-blur-md transition-all flex items-center justify-center gap-2 group"
                 >
-                  <Trophy className="w-4 h-4 text-amber-400" />
-                  <span>View Pay-to-Rank Market</span>
+                  <Film className="w-5 h-5 text-pink-400" />
+                  <span>Whop Clips ($/1K Views)</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
@@ -118,7 +95,7 @@ export default function Home() {
                 <span className="text-slate-600">·</span>
                 <span className="flex items-center gap-1.5 text-slate-300">
                   <Users className="w-4 h-4 text-purple-400" />
-                  Built for Creators
+                  Whop Clips Content Rewards
                 </span>
                 <span className="text-slate-600">·</span>
                 <span className="flex items-center gap-1.5 text-slate-300">
@@ -130,10 +107,7 @@ export default function Home() {
 
             {/* HOMEPAGE ATTRACTION: Outbid Attention Market Spotlight Component */}
             <div className="mt-14 max-w-6xl mx-auto">
-              <OutbidSpotlight
-                listings={outbidListings}
-                onOpenBidModal={handleOpenOutbidModal}
-              />
+              <OutbidSpotlight listings={outbidListings} />
             </div>
           </div>
         </section>
@@ -146,12 +120,12 @@ export default function Home() {
                 One Platform. A Whole Growth Ecosystem.
               </h2>
               <p className="mt-4 text-slate-300 text-base sm:text-lg">
-                Instead of fragmented channels, AZYRA unifies pay-to-rank leaderboards, creator collabs, and campaign briefs.
+                Instead of fragmented channels, AZYRA unifies pay-to-rank leaderboards, creator collabs, and Whop clip bounty pools.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Card 1: Startups -> /startups */}
+              {/* Card 1: Startups */}
               <div className="relative rounded-3xl p-8 bg-gradient-to-b from-[#101424] to-[#0A0D18] border border-indigo-500/20 hover:border-indigo-500/50 transition-all duration-300 flex flex-col justify-between group shadow-xl">
                 <div>
                   <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">
@@ -170,26 +144,26 @@ export default function Home() {
                 </Link>
               </div>
 
-              {/* Card 2: Creators -> /creators */}
+              {/* Card 2: Creators */}
               <div className="relative rounded-3xl p-8 bg-gradient-to-b from-[#141026] to-[#0D0A1B] border border-purple-500/20 hover:border-purple-500/50 transition-all duration-300 flex flex-col justify-between group shadow-xl">
                 <div>
                   <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">
                     🎥
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-3">Creators</h3>
+                  <h3 className="text-2xl font-bold text-white mb-3">Creators &amp; Clippers</h3>
                   <p className="text-slate-300 text-sm leading-relaxed mb-6">
-                    Discover hand-picked campaigns, collaborate with top-bidding startups, earn competitive payouts, and grow your influence.
+                    Discover hand-picked campaigns, edit raw VOD footage, earn Whop CPM payouts ($/1K views), and grow your business.
                   </p>
                 </div>
                 <Link
                   href="/creators"
                   className="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 font-semibold text-sm group-hover:translate-x-1 transition-all"
                 >
-                  <span>Explore Creators Page →</span>
+                  <span>Explore Creators Hub →</span>
                 </Link>
               </div>
 
-              {/* Card 3: Outbid Leaderboard -> /leaderboard */}
+              {/* Card 3: Outbid Leaderboard */}
               <div className="relative rounded-3xl p-8 bg-gradient-to-b from-[#1E1610] to-[#0E0A16] border border-amber-500/30 hover:border-amber-500/60 transition-all duration-300 flex flex-col justify-between group shadow-xl">
                 <div>
                   <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform text-amber-400">
@@ -253,29 +227,19 @@ export default function Home() {
               Place a bid on the AZYRA Outbid Market and put your product directly in front of founders, creators, and investors.
             </p>
             <div className="mt-8 flex justify-center">
-              <button
-                onClick={() => handleOpenOutbidModal()}
+              <Link
+                href="/outbid"
                 className="px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-black font-extrabold text-base shadow-xl shadow-amber-500/25 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
               >
                 <Zap className="w-5 h-5 fill-black" />
                 <span>Place Your Bid Now ($10 Min)</span>
-              </button>
+              </Link>
             </div>
           </div>
         </section>
       </main>
 
       <Footer />
-
-      <CampaignModal isOpen={campaignModalOpen} onClose={() => setCampaignModalOpen(false)} />
-      <CreatorModal isOpen={creatorModalOpen} onClose={() => setCreatorModalOpen(false)} />
-      <OutbidModal
-        isOpen={outbidModalOpen}
-        onClose={() => setOutbidModalOpen(false)}
-        listings={outbidListings}
-        targetListingId={targetOutbidId}
-        onBidSubmitted={handleBidSubmitted}
-      />
     </div>
   );
 }

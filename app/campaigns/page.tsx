@@ -1,11 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import CampaignModal from "@/components/CampaignModal";
-import CreatorModal from "@/components/CreatorModal";
-import ClipSubmissionModal from "@/components/ClipSubmissionModal";
 import { INITIAL_WHOP_BOUNTIES, WhopBountyPool } from "@/lib/bountiesData";
 import {
   CheckCircle2,
@@ -24,14 +22,10 @@ import {
   TrendingUp,
   Video,
   Layers,
+  PlusCircle,
 } from "lucide-react";
 
 export default function CampaignsPage() {
-  const [campaignModalOpen, setCampaignModalOpen] = useState(false);
-  const [creatorModalOpen, setCreatorModalOpen] = useState(false);
-  const [clipModalOpen, setClipModalOpen] = useState(false);
-  const [targetBountyId, setTargetBountyId] = useState<string | null>(null);
-
   const [activeTab, setActiveTab] = useState<"clips" | "briefs">("clips");
   const [filterCategory, setFilterCategory] = useState("all");
   const [bounties, setBounties] = useState<WhopBountyPool[]>(INITIAL_WHOP_BOUNTIES);
@@ -95,25 +89,6 @@ export default function CampaignsPage() {
   const totalWhopBudget = bounties.reduce((sum, b) => sum + b.remainingBudget, 0);
   const totalViewsGenerated = bounties.reduce((sum, b) => sum + b.totalViewsGenerated, 0);
 
-  const handleOpenClipModal = (bountyId?: string) => {
-    setTargetBountyId(bountyId || null);
-    setClipModalOpen(true);
-  };
-
-  const handleSubmitClip = (bountyId: string, videoUrl: string, views: number, payout: number) => {
-    setBounties((prev) =>
-      prev.map((b) =>
-        b.id === bountyId
-          ? {
-              ...b,
-              remainingBudget: Math.max(0, b.remainingBudget - payout),
-              totalViewsGenerated: b.totalViewsGenerated + views,
-            }
-          : b
-      )
-    );
-  };
-
   return (
     <div className="min-h-screen bg-[#07090E] text-slate-100 flex flex-col selection:bg-pink-600/30 selection:text-pink-200">
       <Navbar />
@@ -141,20 +116,20 @@ export default function CampaignsPage() {
             </p>
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-              <button
-                onClick={() => handleOpenClipModal()}
+              <Link
+                href="/submit-clip"
                 className="px-8 py-4 rounded-2xl bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 hover:from-pink-600 hover:to-indigo-700 text-white font-extrabold text-base shadow-xl shadow-pink-500/30 hover:scale-[1.02] active:scale-[0.98] transition flex items-center gap-2"
               >
                 <Film className="w-5 h-5" />
                 <span>Submit Clip &amp; Claim Payout</span>
-              </button>
+              </Link>
 
-              <button
-                onClick={() => setCampaignModalOpen(true)}
+              <Link
+                href="/launch-campaign"
                 className="px-8 py-4 rounded-2xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.15] text-slate-200 font-semibold text-base backdrop-blur-md transition"
               >
                 Launch Whop Bounty Pool
-              </button>
+              </Link>
             </div>
           </div>
         </section>
@@ -307,13 +282,13 @@ export default function CampaignsPage() {
                         </span>
                       </div>
 
-                      <button
-                        onClick={() => handleOpenClipModal(bounty.id)}
+                      <Link
+                        href={`/submit-clip?bountyId=${bounty.id}`}
                         className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 hover:from-pink-600 hover:to-indigo-700 text-white font-extrabold text-xs tracking-wide uppercase shadow-xl shadow-pink-500/25 transition-all flex items-center justify-center gap-2 group/btn hover:scale-[1.02] active:scale-[0.98]"
                       >
                         <Film className="w-4 h-4" />
                         <span>Submit Clip &amp; Claim Payout</span>
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -327,7 +302,6 @@ export default function CampaignsPage() {
               {filteredCampaigns.map((camp) => {
                 const remainingSpots = camp.totalSpots - camp.filledSpots;
                 const fillPercentage = Math.round((camp.filledSpots / camp.totalSpots) * 100);
-                const payoutPerCreator = Math.round(camp.totalPool / camp.totalSpots);
 
                 return (
                   <div
@@ -366,13 +340,13 @@ export default function CampaignsPage() {
                           ${camp.totalPool.toLocaleString()}
                         </span>
                       </div>
-                      <button
-                        onClick={() => setCreatorModalOpen(true)}
+                      <Link
+                        href="/join"
                         className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-xs shadow-lg transition flex items-center justify-center gap-2"
                       >
                         <span>Apply for Opportunity</span>
                         <ArrowRight className="w-4 h-4" />
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 );
@@ -383,15 +357,6 @@ export default function CampaignsPage() {
       </main>
 
       <Footer />
-      <CampaignModal isOpen={campaignModalOpen} onClose={() => setCampaignModalOpen(false)} />
-      <CreatorModal isOpen={creatorModalOpen} onClose={() => setCreatorModalOpen(false)} />
-      <ClipSubmissionModal
-        isOpen={clipModalOpen}
-        onClose={() => setClipModalOpen(false)}
-        bounties={bounties}
-        targetBountyId={targetBountyId}
-        onSubmitClip={handleSubmitClip}
-      />
     </div>
   );
 }

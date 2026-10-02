@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import OutbidModal from "@/components/OutbidModal";
 import { INITIAL_OUTBID_LISTINGS, OutbidListing, OUTBID_RULES } from "@/lib/outbidData";
 import {
   Trophy,
@@ -30,10 +30,7 @@ export default function LeaderboardPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [archiveDate, setArchiveDate] = useState<string>("2026-10-01");
   const [searchQuery, setSearchQuery] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [targetListingId, setTargetListingId] = useState<string | null>(null);
 
-  // Sorting logic based on active tab
   const getFilteredAndSorted = () => {
     let list = [...listings];
 
@@ -54,7 +51,6 @@ export default function LeaderboardPage() {
     if (activeTab === "today") {
       list.sort((a, b) => b.todayBid - a.todayBid);
     } else {
-      // Default: All-Time cumulative
       list.sort((a, b) => b.totalBid - a.totalBid);
     }
 
@@ -66,24 +62,6 @@ export default function LeaderboardPage() {
   const totalMarketVolume = listings.reduce((acc, curr) => acc + curr.totalBid, 0);
   const todayMarketVolume = listings.reduce((acc, curr) => acc + curr.todayBid, 0);
   const minToBeatTop = (currentTop?.totalBid || 0) + OUTBID_RULES.MIN_OVERBID_DIFFERENCE;
-
-  const handleBidSubmitted = (newOrUpdatedItem: OutbidListing) => {
-    setListings((prev) => {
-      const index = prev.findIndex((item) => item.id === newOrUpdatedItem.id);
-      if (index >= 0) {
-        const copy = [...prev];
-        copy[index] = newOrUpdatedItem;
-        return copy;
-      } else {
-        return [newOrUpdatedItem, ...prev];
-      }
-    });
-  };
-
-  const handleOpenBid = (id?: string) => {
-    setTargetListingId(id || null);
-    setIsModalOpen(true);
-  };
 
   return (
     <div className="min-h-screen bg-[#07090E] text-slate-100 flex flex-col selection:bg-amber-500/30 selection:text-amber-200">
@@ -111,23 +89,23 @@ export default function LeaderboardPage() {
               No upvote rings, review queues, or secret algorithms. Submit your startup website or X profile and bid to capture live rank positions.
             </p>
 
-            {/* Quick Action Button */}
+            {/* Quick Action Button Links */}
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button
-                onClick={() => handleOpenBid()}
+              <Link
+                href="/outbid"
                 className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-black font-extrabold text-base shadow-xl shadow-amber-500/25 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group"
               >
                 <PlusCircle className="w-5 h-5 text-black" />
-                <span>Submit Product / Outbid Now ($10 Min)</span>
-              </button>
+                <span>Submit Product / Outbid Console ($10 Min)</span>
+              </Link>
 
-              <button
-                onClick={() => handleOpenBid(currentTop?.id)}
+              <Link
+                href={`/outbid?id=${currentTop?.id}`}
                 className="w-full sm:w-auto px-6 py-4 rounded-2xl bg-white/[0.05] hover:bg-white/[0.1] border border-amber-500/40 text-amber-300 font-bold text-sm backdrop-blur-md transition flex items-center justify-center gap-2"
               >
                 <Crown className="w-4 h-4 text-amber-400" />
                 <span>Steal #1 Spot (${minToBeatTop.toLocaleString()})</span>
-              </button>
+              </Link>
             </div>
 
             {/* Bidding Rules Highlights */}
@@ -179,10 +157,9 @@ export default function LeaderboardPage() {
           </div>
         </section>
 
-        {/* Controls: Tabs, Category Filters, Search */}
+        {/* Controls */}
         <section className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
-            {/* Board View Switcher (All-Time, Today, Daily Archive) */}
             <div className="flex items-center p-1.5 rounded-2xl bg-white/[0.04] border border-white/[0.08]">
               <button
                 onClick={() => setActiveTab("alltime")}
@@ -221,7 +198,6 @@ export default function LeaderboardPage() {
               </button>
             </div>
 
-            {/* If Daily Archive mode is active */}
             {activeTab === "archive" && (
               <div className="flex items-center gap-2 bg-white/[0.04] px-4 py-2 rounded-xl border border-white/[0.08]">
                 <span className="text-xs text-slate-400 font-mono">Select Archive Date:</span>
@@ -234,7 +210,6 @@ export default function LeaderboardPage() {
               </div>
             )}
 
-            {/* Search Input */}
             <div className="relative max-w-md w-full">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
@@ -247,7 +222,6 @@ export default function LeaderboardPage() {
             </div>
           </div>
 
-          {/* Category Chips Bar */}
           <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-6">
             {[
               "All",
@@ -273,7 +247,7 @@ export default function LeaderboardPage() {
             ))}
           </div>
 
-          {/* Leaderboard Pay-To-Rank Table */}
+          {/* Table */}
           <div className="rounded-3xl border border-amber-500/20 bg-[#090C19] overflow-hidden shadow-2xl">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
@@ -305,7 +279,6 @@ export default function LeaderboardPage() {
                             : "hover:bg-white/[0.02]"
                         }`}
                       >
-                        {/* Rank Badge */}
                         <td className="py-5 px-6 font-mono font-black">
                           <div className="flex items-center gap-2">
                             <span
@@ -325,7 +298,6 @@ export default function LeaderboardPage() {
                           </div>
                         </td>
 
-                        {/* Product Entity info */}
                         <td className="py-5 px-6">
                           <div className="space-y-1">
                             <div className="flex items-center gap-2.5">
@@ -360,14 +332,12 @@ export default function LeaderboardPage() {
                           </div>
                         </td>
 
-                        {/* Category */}
                         <td className="py-5 px-6 font-mono text-xs text-slate-300">
                           <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/[0.08]">
                             {item.category}
                           </span>
                         </td>
 
-                        {/* Total Spent */}
                         <td className="py-5 px-6 font-mono">
                           <div className="flex items-center gap-1">
                             <span className="text-base font-black text-amber-400">
@@ -377,7 +347,6 @@ export default function LeaderboardPage() {
                           </div>
                         </td>
 
-                        {/* Today Spent */}
                         <td className="py-5 px-6 font-mono text-xs">
                           {item.todayBid > 0 ? (
                             <span className="text-emerald-400 font-bold flex items-center gap-1">
@@ -388,16 +357,14 @@ export default function LeaderboardPage() {
                           )}
                         </td>
 
-                        {/* Total Bids */}
                         <td className="py-5 px-6 font-mono text-xs text-slate-400">
                           {item.bidCount} bids placed
                         </td>
 
-                        {/* Action Button */}
                         <td className="py-5 px-6 text-right">
-                          <button
-                            onClick={() => handleOpenBid(item.id)}
-                            className={`px-4 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 ml-auto ${
+                          <Link
+                            href={`/outbid?id=${item.id}`}
+                            className={`px-4 py-2 rounded-xl text-xs font-extrabold transition inline-flex items-center gap-1.5 ${
                               isTop1
                                 ? "bg-amber-500 hover:bg-amber-400 text-black shadow-lg shadow-amber-500/20"
                                 : "bg-white/[0.08] hover:bg-white/[0.16] text-amber-300 border border-amber-500/30"
@@ -405,7 +372,7 @@ export default function LeaderboardPage() {
                           >
                             <Zap className="w-3.5 h-3.5 fill-current" />
                             <span>{isTop1 ? "Outbid #1" : "Outbid / Boost"}</span>
-                          </button>
+                          </Link>
                         </td>
                       </tr>
                     );
@@ -418,15 +385,6 @@ export default function LeaderboardPage() {
       </main>
 
       <Footer />
-
-      {/* Integrated Outbid Bidding Modal */}
-      <OutbidModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        listings={listings}
-        targetListingId={targetListingId}
-        onBidSubmitted={handleBidSubmitted}
-      />
     </div>
   );
 }

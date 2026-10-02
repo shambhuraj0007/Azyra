@@ -20,10 +20,9 @@ import { OutbidListing, OUTBID_RULES } from "@/lib/outbidData";
 
 interface OutbidSpotlightProps {
   listings: OutbidListing[];
-  onOpenBidModal: (listingId?: string) => void;
 }
 
-export default function OutbidSpotlight({ listings, onOpenBidModal }: OutbidSpotlightProps) {
+export default function OutbidSpotlight({ listings }: OutbidSpotlightProps) {
   const [activeView, setActiveView] = useState<"alltime" | "today">("alltime");
 
   const sorted = [...listings].sort((a, b) =>
@@ -50,7 +49,6 @@ export default function OutbidSpotlight({ listings, onOpenBidModal }: OutbidSpot
             <span>Outbid.lol Live Attention Market</span>
           </div>
 
-          {/* Dynamic news ticker */}
           <div className="flex items-center gap-6 text-slate-300 font-mono text-[11px] overflow-x-auto whitespace-nowrap py-1">
             <span className="flex items-center gap-1.5 text-amber-300 font-bold">
               👑 #1 Champion: {top1?.name} (${top1?.totalBid.toLocaleString()})
@@ -89,7 +87,7 @@ export default function OutbidSpotlight({ listings, onOpenBidModal }: OutbidSpot
           </div>
         </div>
 
-        {/* Main Section Header */}
+        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
             <span className="text-xs font-mono uppercase tracking-widest text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20 inline-flex items-center gap-1.5 font-bold">
@@ -105,20 +103,19 @@ export default function OutbidSpotlight({ listings, onOpenBidModal }: OutbidSpot
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => onOpenBidModal()}
+            <Link
+              href={`/outbid?id=${top1?.id}`}
               className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-black font-extrabold text-sm shadow-xl shadow-amber-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 group"
             >
               <Zap className="w-4 h-4 text-black fill-black" />
               <span>Outbid #1 Spot (${minToTakeTop.toLocaleString()})</span>
               <ArrowUpRight className="w-4 h-4 text-black group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </button>
+            </Link>
           </div>
         </div>
 
-        {/* Top 3 Podium Cards */}
+        {/* Top 3 Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Rank #1 Gold */}
           {top1 && (
             <div className="relative rounded-3xl p-6 bg-gradient-to-b from-amber-500/20 via-[#13101E] to-[#0A0D1B] border-2 border-amber-500/50 shadow-2xl shadow-amber-500/10 group flex flex-col justify-between">
               <div className="absolute -top-3 left-6 px-3 py-1 rounded-full bg-amber-500 text-black font-extrabold font-mono text-xs shadow-lg flex items-center gap-1">
@@ -160,17 +157,16 @@ export default function OutbidSpotlight({ listings, onOpenBidModal }: OutbidSpot
                   <Globe className="w-3.5 h-3.5" />
                   <span>Visit Website →</span>
                 </a>
-                <button
-                  onClick={() => onOpenBidModal(top1.id)}
+                <Link
+                  href={`/outbid?id=${top1.id}`}
                   className="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold transition"
                 >
                   Outbid #1 🔥
-                </button>
+                </Link>
               </div>
             </div>
           )}
 
-          {/* Rank #2 Silver */}
           {top2 && (
             <div className="relative rounded-3xl p-6 bg-gradient-to-b from-indigo-500/15 via-[#101326] to-[#0A0D1B] border border-indigo-500/30 shadow-xl group flex flex-col justify-between">
               <div className="absolute -top-3 left-6 px-3 py-0.5 rounded-full bg-slate-300 text-black font-extrabold font-mono text-xs shadow">
@@ -212,17 +208,16 @@ export default function OutbidSpotlight({ listings, onOpenBidModal }: OutbidSpot
                   <Globe className="w-3.5 h-3.5" />
                   <span>Visit Website →</span>
                 </a>
-                <button
-                  onClick={() => onOpenBidModal(top2.id)}
+                <Link
+                  href={`/outbid?id=${top2.id}`}
                   className="px-3 py-1.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/40 text-xs font-bold transition"
                 >
                   Outbid Spot ⚡
-                </button>
+                </Link>
               </div>
             </div>
           )}
 
-          {/* Rank #3 Bronze */}
           {top3 && (
             <div className="relative rounded-3xl p-6 bg-gradient-to-b from-purple-500/15 via-[#131024] to-[#0A0D1B] border border-purple-500/30 shadow-xl group flex flex-col justify-between">
               <div className="absolute -top-3 left-6 px-3 py-0.5 rounded-full bg-amber-700 text-white font-extrabold font-mono text-xs shadow">
@@ -264,18 +259,18 @@ export default function OutbidSpotlight({ listings, onOpenBidModal }: OutbidSpot
                   <Globe className="w-3.5 h-3.5" />
                   <span>Visit Website →</span>
                 </a>
-                <button
-                  onClick={() => onOpenBidModal(top3.id)}
+                <Link
+                  href={`/outbid?id=${top3.id}`}
                   className="px-3 py-1.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/40 text-xs font-bold transition"
                 >
                   Outbid Spot ⚡
-                </button>
+                </Link>
               </div>
             </div>
           )}
         </div>
 
-        {/* Bottom Gateway to Full Outbid Leaderboard Page */}
+        {/* Gateway */}
         <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/[0.08]">
           <div className="flex items-center gap-2 text-xs text-slate-400 font-mono">
             <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
